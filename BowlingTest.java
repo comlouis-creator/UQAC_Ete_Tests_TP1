@@ -1,15 +1,18 @@
 /**
  * MORLOT PINTA Louis MORL18010200
- * MARCIL Loïck 
+ * MAKELE Loïck 
  * Esaie
  * TIA Joel 
  */
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
 import stev.bowling.Game;
 import stev.bowling.NormalFrame;
@@ -377,11 +380,51 @@ public class BowlingTest {
     }
     
     /**
+     * Teste si le numéro d'un carreau peut être une fraction
+     */
+    @Test
+    public void testFrameNumberFraction() {
+    	assertThrows(BowlingException.class, () -> new NormalFrame(2/3));
+    }
+    
+    /**
+     * Teste si le numéro d'un carreau peut être une fraction
+     */
+    @Test
+    public void testFrameNumberNegativeFraction() {
+    	assertThrows(BowlingException.class, () -> new NormalFrame(-2/3));
+    }
+    
+    /**
+     * Teste si le numéro d'un carreau peut être plus grand que 10
+     */
+    @Test
+    public void testFrameNumberBiggerThan10() {
+    	assertThrows(BowlingException.class, () -> new NormalFrame(11));
+    }
+    
+    /**
      * Teste si le numéro du dernier carreau peut être négatif
      */
     @Test
     public void testLastFrameNumberNegative() {
     	assertThrows(BowlingException.class, () -> new LastFrame(-1));
+    }
+    
+    /**
+     * Teste si le numéro du dernier carreau peut être une fraction
+     */
+    @Test
+    public void testLastFrameNumberFraction() {
+    	assertThrows(BowlingException.class, () -> new LastFrame(2/3));
+    }
+    
+    /**
+     * Teste si le numéro du dernier carreau peut être une fraction négative
+     */
+    @Test
+    public void testLastFrameNumberNegativeFraction() {
+    	assertThrows(BowlingException.class, () -> new LastFrame(-2/3));
     }
     
     /**
@@ -393,11 +436,67 @@ public class BowlingTest {
     }
     
     /**
+     * Teste si le numéro d'un lancer peut être nul
+     */
+    @Test
+    public void testPinsFraction() {
+    	assertThrows(BowlingException.class, () -> new NormalFrame(1).setPinsDown(1, 2/3));
+    }
+    
+    /**
+     * Teste si le numéro d'un lancer peut être une fraction
+     */
+    @Test
+    public void testRollFraction() {
+    	assertThrows(BowlingException.class, () -> new NormalFrame(1).setPinsDown(2/3, 10));
+    }
+    
+    /**
+     * Teste si le numéro d'un lancer peut être une fraction
+     */
+    @Test
+    public void testRollFractionLastFrame() {
+    	assertThrows(BowlingException.class, () -> new LastFrame(10).setPinsDown(2/3, 10));
+    }
+    
+    /**
+     * Teste si le numéro d'un lancer peut être une fraction
+     */
+    @Test
+    public void testRollNegativeFractionLastFrame() {
+    	assertThrows(BowlingException.class, () -> new LastFrame(10).setPinsDown(-2/3, 10));
+    }
+    
+    /**
+     * Teste si le numéro d'un lancer peut être une fraction négative
+     */
+    @Test
+    public void testRollFractionNegative() {
+    	assertThrows(BowlingException.class, () -> new NormalFrame(1).setPinsDown(-2/3, 10));
+    }
+    
+    /**
      * Teste si le numéro d'un lancer peut être négatif
      */
     @Test
     public void testRollNegative() {
     	assertThrows(BowlingException.class, () -> new NormalFrame(1).setPinsDown(-1, 10));
+    }
+    
+    /**
+     * Teste si le numéro d'un lancer d'un carreau normal peut être supérieur à 2
+     */
+    @Test
+    public void testRollNormalFrameBiggerThan2() {
+    	assertThrows(BowlingException.class, () -> new NormalFrame(1).setPinsDown(3, 0));
+    }
+    
+    /**
+     * Teste si le numéro du dernier carreau peut être plus grand que 10
+     */
+    @Test
+    public void testLastFrameNumberBiggerThan10() {
+    	assertThrows(BowlingException.class, () -> new LastFrame(11));
     }
     
     @Test
@@ -544,5 +643,29 @@ public class BowlingTest {
         Frame frame = new NormalFrame(1);
         assertThrows(BowlingException.class, () -> frame.setPinsDown(1, -1));
     }
+    
+    @ParameterizedTest
+    @CsvSource({
+        "5, 6",
+        "7, 4",
+        "8, 5",
+        "9, 2",
+        "10, 1"
+    })
+    public void testSumOfPinsMoreThanTenInNormalFrame(int firstRoll, int secondRoll) {
+        Frame frame = new NormalFrame(1);
+        frame.setPinsDown(1, firstRoll);
+        assertThrows(BowlingException.class, () -> frame.setPinsDown(2, secondRoll));
+    }
+    
+    /**
+     * Teste la récupération des quilles d'un lancer non effectué dans le dernier carreau.
+     */
+    @Test
+    void testLastFrameGetPinsDownNonExistentRoll() {
+        assertEquals(-1, new LastFrame(10).getPinsDown(1));
+    }
+    
+    
     
 }
