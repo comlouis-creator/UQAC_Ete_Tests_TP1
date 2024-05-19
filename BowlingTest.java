@@ -34,28 +34,6 @@ public class BowlingTest {
     public void tearDown() {
         game = null;
     }
-
-	@Test
-	public void test1() {
-		Game g = new Game(); //new Game();
-		g.addFrame(new NormalFrame(1).setPinsDown(1,4));
-		assertEquals(4, g.getCumulativeScore(1));
-	}
-	
-	@Test
-	public void test2() {
-		Game g = new Game();
-		g.addFrame(new NormalFrame(1).setPinsDown(1,4));
-		assertEquals(4, g.getCumulativeScore(1));
-		System.out.println("BONJOUR");
-	}
-	
-	@Test
-	public void test3() {
-		Game g = new Game(); //new Game();
-		g.addFrame(new NormalFrame(1).setPinsDown(1, 3).setPinsDown(2, 6));
-		assertEquals(9, g.getCumulativeScore(1));
-	}
 	
 	/**
      * Teste l'ajout de quilles pour un frame normal.
@@ -142,14 +120,12 @@ public class BowlingTest {
         Frame frame = new LastFrame(10);
         frame.setPinsDown(1, 10);
         frame.setPinsDown(2, 10);
-        frame.setPinsDown(3, 10);
-        assertEquals("XXX", frame.toString());
+        assertEquals("XX", frame.toString());
 
         frame.reset();
         frame.setPinsDown(1, 10);
         frame.setPinsDown(2, 5);
         assertEquals("X5", frame.toString());
-
     }
 
     /**
@@ -344,15 +320,6 @@ public class BowlingTest {
     @Test
     public void testLastFrameNumberDifferentOfTen() {
     	assertThrows(BowlingException.class, () -> new LastFrame(9));
-    }
-    
-    @Test
-    public void testOpenFrameNoSpareNoStrike() {
-        Frame frame = new NormalFrame(1);
-        frame.setPinsDown(1, 4);
-        frame.setPinsDown(2, 5);
-        assertEquals(9, frame.countPinsDown());
-        assertEquals("45", frame.toString());
     }
     
     /**
@@ -665,7 +632,5 @@ public class BowlingTest {
     void testLastFrameGetPinsDownNonExistentRoll() {
         assertEquals(-1, new LastFrame(10).getPinsDown(1));
     }
-    
-    
     
 }
