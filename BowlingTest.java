@@ -20,6 +20,15 @@ public class BowlingTest {
 	private Game game = new Game();
 	
 	/**
+     * Teste lors du dernier carreau si on fait un strike lors du premier roll si on peut faire 2 rolls ensuit.
+     */
+    @Test
+    public void testLastFrameFirstRollStrike() {
+    	Frame lastframe = new LastFrame(10);
+    	lastframe.setPinsDown(1, 10).setPinsDown(2, 10).setPinsDown(3, 10);
+    }
+	
+	/**
      * Teste l'ajout de quilles pour un frame normal.
      */
     @Test
