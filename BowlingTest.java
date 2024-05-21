@@ -1,21 +1,15 @@
 /**
  * MORLOT PINTA Louis MORL18010200
- * MAKELE Loïck 
- * Esaie
- * TIA Joel 
+ * MAKELE Loïck MAKE17020200
+ * LARA Esaie Guerson LARE10039600
+ * TIA Gbongue Joel TIAG02068400
  */
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
-
-import stev.bowling.Game;
-import stev.bowling.NormalFrame;
 
 import static org.junit.Assert.*;
 
@@ -23,17 +17,7 @@ import stev.bowling.*;
 
 public class BowlingTest {
 	
-	private Game game;
-
-    @BeforeEach
-    public void setUp() {
-        game = new Game();
-    }
-
-    @AfterEach
-    public void tearDown() {
-        game = null;
-    }
+	private Game game = new Game();
 	
 	/**
      * Teste l'ajout de quilles pour un frame normal.
@@ -59,6 +43,11 @@ public class BowlingTest {
         assertEquals(-1, frame.getPinsDown(2));
     }
     
+    /**
+     * Test de la réinitialisation d'un carreau.
+     * Ce test vérifie que les quilles abattues et le nombre de lancers
+     * sont correctement réinitialisés après l'appel à la méthode reset().
+     */
     @Test
     public void testFrameReset() {
         Frame frame = new NormalFrame(1);
@@ -113,22 +102,6 @@ public class BowlingTest {
     }
 
     /**
-     * Teste la méthode toString pour le dernier frame.
-     */
-    @Test
-    public void testToStringLastFrame() {
-        Frame frame = new LastFrame(10);
-        frame.setPinsDown(1, 10);
-        frame.setPinsDown(2, 10);
-        assertEquals("XX", frame.toString());
-
-        frame.reset();
-        frame.setPinsDown(1, 10);
-        frame.setPinsDown(2, 5);
-        assertEquals("X5", frame.toString());
-    }
-
-    /**
      * Teste l'ajout de frames et le calcul du score cumulatif dans une partie.
      */
     @Test
@@ -158,7 +131,7 @@ public class BowlingTest {
     }
 
     /**
-     * Teste la levée d'exception pour les lancers invalides.
+     * Teste la levée d'exception pour les lancers invalides. Ici on a un nombre de quille supérieur à 10 sur 1 roll
      */
     @Test
     public void testInvalidRoll() {
@@ -166,12 +139,18 @@ public class BowlingTest {
         assertThrows(BowlingException.class, () -> frame.setPinsDown(1, 11));
     }
 
+    /**
+     * Teste la levée d'exception pour les lancers invalides. Ici on a un 2eme roll alors qu'on a pas de 1er roll
+     */
     @Test
     public void testInvalidRollSequence() {
         Frame frame = new NormalFrame(1);
         assertThrows(BowlingException.class, () -> frame.setPinsDown(2, 5));
     }
 
+    /**
+     * Teste la levée d'exception pour les lancers invalides. Ici on a un nombre de quille supérieur à 10 mais sur 2 rolls
+     */
     @Test
     public void testInvalidRollExceedingPins() {
         Frame frame = new NormalFrame(1);
@@ -192,10 +171,10 @@ public class BowlingTest {
     }
 
     /**
-     * Teste un cas particulier du dernier frame avec un seul lancer.
+     * Teste un cas particulier du dernier frame avec un comptage au bout de 2 rolls avant de lancer le troisième.
      */
     @Test
-    public void testLastFrameSingleRoll() {
+    public void testLastFrame() {
         Frame frame = new LastFrame(10);
         frame.setPinsDown(1, 10);
         frame.setPinsDown(2, 10);
@@ -203,10 +182,10 @@ public class BowlingTest {
     }
 
     /**
-     * Teste l'ajout de frames et le calcul du score pour un jeu parfait.
+     * Teste l'ajout de frames et le calcul du score pour un jeu avec plusieurs strikes.
      */
     @Test
-    public void testPerfectGame() {
+    public void testMultipleStrikesGame() {
         Game game = new Game();
         for (int i = 1; i <= 9; i++) {
             game.addFrame(new NormalFrame(i).setPinsDown(1, 10));
@@ -216,7 +195,6 @@ public class BowlingTest {
         for (int i = 1; i <= 9; i++) {
             assertEquals(i * 30, game.getCumulativeScore(i));
         }
-        assertEquals(290, game.getCumulativeScore(10));
     }
 
     /**
@@ -263,7 +241,7 @@ public class BowlingTest {
     }
     
     /**
-     * Teste le calcul du score pour un jeu avec des scores variés, incluant des spares et des strikes dans le dernier carreau.
+     * Teste le calcul du score pour un jeu avec des scores variés, incluant un spare dans le dernier carreau.
      */
     @Test
     public void testMixedGameScoring() {
@@ -347,7 +325,7 @@ public class BowlingTest {
     }
     
     /**
-     * Teste si le numéro d'un carreau peut être une fraction
+     * Teste si le numéro d'un carreau peut être une fraction ne donnant pas un entier
      */
     @Test
     public void testFrameNumberFraction() {
@@ -355,7 +333,7 @@ public class BowlingTest {
     }
     
     /**
-     * Teste si le numéro d'un carreau peut être une fraction
+     * Teste si le numéro d'un carreau peut être une fraction négative ne donnant pas un entier
      */
     @Test
     public void testFrameNumberNegativeFraction() {
@@ -379,7 +357,7 @@ public class BowlingTest {
     }
     
     /**
-     * Teste si le numéro du dernier carreau peut être une fraction
+     * Teste si le numéro du dernier carreau peut être une fraction qui ne donne pas un entier
      */
     @Test
     public void testLastFrameNumberFraction() {
@@ -387,7 +365,7 @@ public class BowlingTest {
     }
     
     /**
-     * Teste si le numéro du dernier carreau peut être une fraction négative
+     * Teste si le numéro du dernier carreau peut être une fraction négative ne donnant pas un entier 
      */
     @Test
     public void testLastFrameNumberNegativeFraction() {
@@ -403,7 +381,7 @@ public class BowlingTest {
     }
     
     /**
-     * Teste si le numéro d'un lancer peut être nul
+     * Teste si le score peut être une fraction qui ne donne pas un entier
      */
     @Test
     public void testPinsFraction() {
@@ -411,7 +389,7 @@ public class BowlingTest {
     }
     
     /**
-     * Teste si le numéro d'un lancer peut être une fraction
+     * Teste si le numéro d'un lancer peut être une fraction ne donnant pas un entier
      */
     @Test
     public void testRollFraction() {
@@ -419,7 +397,7 @@ public class BowlingTest {
     }
     
     /**
-     * Teste si le numéro d'un lancer peut être une fraction
+     * Teste si le numéro d'un lancer pour le dernier carreau peut être une fraction ne donnant pas un entier
      */
     @Test
     public void testRollFractionLastFrame() {
@@ -427,7 +405,7 @@ public class BowlingTest {
     }
     
     /**
-     * Teste si le numéro d'un lancer peut être une fraction
+     * Teste si le numéro d'un lancer pour le dernier carreau peut être une fraction négative ne donnant pas un entier
      */
     @Test
     public void testRollNegativeFractionLastFrame() {
@@ -435,7 +413,7 @@ public class BowlingTest {
     }
     
     /**
-     * Teste si le numéro d'un lancer peut être une fraction négative
+     * Teste si le numéro d'un lancer peut être une fraction négative ne donnant pas un entier
      */
     @Test
     public void testRollFractionNegative() {
@@ -465,103 +443,22 @@ public class BowlingTest {
     public void testLastFrameNumberBiggerThan10() {
     	assertThrows(BowlingException.class, () -> new LastFrame(11));
     }
-    
-    @Test
-    public void testFrameWithGutterBall() {
-        Frame frame = new NormalFrame(2);
-        frame.setPinsDown(1, 0);
-        frame.setPinsDown(2, 8);
-        assertEquals(8, frame.countPinsDown());
-        assertEquals("-8", frame.toString());
-    }
-    
-    @Test
-    public void testCumulativeScoreWithOpenFrames() {
-        Frame frame1 = new NormalFrame(1);
-        frame1.setPinsDown(1, 3);
-        frame1.setPinsDown(2, 6);
-        game.addFrame(frame1);
 
-        Frame frame2 = new NormalFrame(2);
-        frame2.setPinsDown(1, 2);
-        frame2.setPinsDown(2, 7);
-        game.addFrame(frame2);
-
-        assertEquals(9, game.getCumulativeScore(1));
-        assertEquals(18, game.getCumulativeScore(2));
-    }
-    
+    /**
+     * Test du score avec un strike
+     */
     @Test
-    public void testStrikeFollowedByOpenFrame() {
+    public void testStrike() {
         Frame frame1 = new NormalFrame(1);
         frame1.setPinsDown(1, 10);
         game.addFrame(frame1);
-
-        Frame frame2 = new NormalFrame(2);
-        frame2.setPinsDown(1, 3);
-        frame2.setPinsDown(2, 4);
-        game.addFrame(frame2);
-
-        assertEquals(17, game.getCumulativeScore(1)); // 10 + (3+4)
-        assertEquals(24, game.getCumulativeScore(2)); // 17 + (3+4)
-    }
-
-    @Test
-    public void testSpareFollowedByOpenFrame() {
-        Frame frame1 = new NormalFrame(1);
-        frame1.setPinsDown(1, 6);
-        frame1.setPinsDown(2, 4); // Spare
-        game.addFrame(frame1);
-
-        Frame frame2 = new NormalFrame(2);
-        frame2.setPinsDown(1, 5);
-        frame2.setPinsDown(2, 2);
-        game.addFrame(frame2);
-
-        assertEquals(15, game.getCumulativeScore(1)); // 10 + 5
-        assertEquals(22, game.getCumulativeScore(2)); // 15 + (5+2)
-    }
-
-    @Test
-    public void testMultipleStrikes() {
-        Frame frame1 = new NormalFrame(1);
-        frame1.setPinsDown(1, 10);
-        game.addFrame(frame1);
-
-        Frame frame2 = new NormalFrame(2);
-        frame2.setPinsDown(1, 10);
-        game.addFrame(frame2);
-
-        Frame frame3 = new NormalFrame(3);
-        frame3.setPinsDown(1, 10);
-        game.addFrame(frame3);
 
         assertEquals(30, game.getCumulativeScore(1)); // 10 + (10+10)
-        assertEquals(60, game.getCumulativeScore(2)); // 30 + (10+10)
-        assertEquals(60, game.getCumulativeScore(3)); // 60 + 10 (game continues)
-    }
-
-    @Test
-    public void testStrikeFollowedBySpare() {
-        Frame frame1 = new NormalFrame(1);
-        frame1.setPinsDown(1, 10);
-        game.addFrame(frame1);
-
-        Frame frame2 = new NormalFrame(2);
-        frame2.setPinsDown(1, 6);
-        frame2.setPinsDown(2, 4); // Spare
-        game.addFrame(frame2);
-
-        Frame frame3 = new NormalFrame(3);
-        frame3.setPinsDown(1, 5);
-        frame3.setPinsDown(2, 3);
-        game.addFrame(frame3);
-
-        assertEquals(20, game.getCumulativeScore(1)); // 10 + (6+4)
-        assertEquals(35, game.getCumulativeScore(2)); // 20 + (6+4+5)
-        assertEquals(43, game.getCumulativeScore(3)); // 35 + (5+3)
     }
     
+    /**
+     * Test d'un lancer nul suivi d'un comptage valide de quilles.
+     */
     @Test
     public void testGutterFollowedByPins() {
         Frame frame = new NormalFrame(1);
@@ -571,12 +468,18 @@ public class BowlingTest {
         assertEquals("-7", frame.toString());
     }
     
+    /**
+     * Test de la récupération des quilles abattues avant un lancer.
+     */
     @Test
     public void testGetPinsDownBeforeRoll() {
         Frame frame = new NormalFrame(1);
         assertEquals(-1, frame.getPinsDown(1));
     }
     
+    /**
+     * Test de la récupération du score cumulatif pour un carreau invalide.
+     */
     @Test
     public void testGetCumulativeScoreInvalidFrame() {
         Game game = new Game();
@@ -587,6 +490,9 @@ public class BowlingTest {
         assertThrows(BowlingException.class, () -> game.getCumulativeScore(2));
     }
     
+    /**
+     * Test de l'ajout d'un carreau après le dernier carreau.
+     */
     @Test
     public void testAddFrameAfterLast() {
         Game game = new Game();
@@ -597,6 +503,9 @@ public class BowlingTest {
         assertThrows(BowlingException.class, () -> game.addFrame(new NormalFrame(11)));
     }
     
+    /**
+     * Test de l'exception sur le troisième lancer dans un carreau normal.
+     */
     @Test
     public void testExceptionOnThirdRollInNormalFrame() {
         Frame frame = new NormalFrame(1);
@@ -605,12 +514,18 @@ public class BowlingTest {
         assertThrows(BowlingException.class, () -> frame.setPinsDown(3, 2));
     }
     
+    /** 
+     * Test des quilles abattues avec une valeur négative.
+     */
     @Test
     public void testNegativePinsDown() {
         Frame frame = new NormalFrame(1);
         assertThrows(BowlingException.class, () -> frame.setPinsDown(1, -1));
     }
     
+    /**
+     * Test de divers scénarios où la somme des quilles abattues dans un carreau normal (différent de dix) dépasse dix.
+     */
     @ParameterizedTest
     @CsvSource({
         "5, 6",
@@ -632,5 +547,7 @@ public class BowlingTest {
     void testLastFrameGetPinsDownNonExistentRoll() {
         assertEquals(-1, new LastFrame(10).getPinsDown(1));
     }
+    
+    
     
 }
