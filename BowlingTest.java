@@ -20,7 +20,7 @@ public class BowlingTest {
 	private Game game = new Game();
 	
 	/**
-     * Teste lors du dernier carreau si on fait un strike lors du premier roll si on peut faire 2 rolls ensuit.
+     * Teste lors du dernier carreau si on fait un strike lors du premier roll si on peut faire 2 rolls ensuite.
      */
     @Test
     public void testLastFrameFirstRollStrike() {
