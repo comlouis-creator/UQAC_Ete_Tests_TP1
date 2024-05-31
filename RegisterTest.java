@@ -15,6 +15,7 @@ import org.junit.jupiter.api.Test;
 
 import stev.kwikemart.AmountException;
 import stev.kwikemart.InvalidQuantityException;
+import stev.kwikemart.InvalidUpcException;
 import stev.kwikemart.Item;
 import stev.kwikemart.PaperRoll;
 import stev.kwikemart.Register;
@@ -58,7 +59,7 @@ public class RegisterTest {
 	}
 	
 	@Test
-	public void quantitéNulle() {
+	public void quantiteNulle() {
 		List<Item> grocery = new ArrayList<Item>();
 		grocery.add(new Item(Upc.generateCode("34323432343"), "Nerds", 0, 1));
 		assertThrows(InvalidQuantityException.class, () -> System.out.println(register.print(grocery)));
@@ -79,8 +80,40 @@ public class RegisterTest {
 		grocery.add(new Item(Upc.generateCode("61519314159"), "Doritos", 1, 1.25));
 		grocery.add(new Item(Upc.generateCode("22804918500"), "Beef", 0.5, 5.75));
 		grocery.add(new Item(Upc.generateCode("12345678901"), "Bananas", 1, 1.5));
-		grocery.add(new Item(Upc.generateCode("61519314159"), "Doritos", 1, 1));
+		grocery.add(new Item(Upc.generateCode("01519314158"), "Pineapples", 1, 1));
+		grocery.add(new Item(Upc.generateCode("71519314159"), "Kiwis", 1, 1));
+		grocery.add(new Item(Upc.generateCode("81519314159"), "Watermelons", 1, 1));
+		grocery.add(new Item(Upc.generateCode("91519314159"), "Blueberries", 1, 1));
+		grocery.add(new Item(Upc.generateCode("91519314158"), "Strawberries", 1, 1));
 		assertThrows(RegisterException.TooManyItemsException.class, () -> System.out.println(register.print(grocery)));
+	}
+	
+	@Test
+	public void prixNegatif() {
+		List<Item> grocery = new ArrayList<Item>();
+		grocery.add(new Item(Upc.generateCode("01519314158"), "Pineapples", 1, -1));
+		assertThrows(AmountException.NegativeAmountException.class, () -> System.out.println(register.print(grocery)));
+	}
+	
+	@Test
+	public void prixPlusGrand35PlusPetit100() {
+		List<Item> grocery = new ArrayList<Item>();
+		grocery.add(new Item(Upc.generateCode("01519314158"), "Pineapples", 1, 36));
+		assertThrows(AmountException.AmountTooLargeException.class, () -> System.out.println(register.print(grocery)));
+	}
+	
+	@Test
+	public void prix3ChiffresEtPlus() {
+		List<Item> grocery = new ArrayList<Item>();
+		grocery.add(new Item(Upc.generateCode("01519314158"), "Pineapples", 1, 100));
+		assertThrows(AmountException.AmountTooLargeException.class, () -> System.out.println(register.print(grocery)));
+	}
+	
+	@Test
+	public void UPCVide() {
+		List<Item> grocery = new ArrayList<Item>();
+		grocery.add(new Item(Upc.generateCode(""), "Pineapples", 1, 1));
+		assertThrows(InvalidUpcException.NoUpcException.class, () -> System.out.println(register.print(grocery)));
 	}
 
 }
