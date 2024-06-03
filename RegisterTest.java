@@ -5,6 +5,28 @@
  * TIA Gbongue Joel TIAG02068400
  */
 
+/**
+ * Classes d'équivalence invalides :
+ * 
+ * Liste de plus de 10 items (intervalle > 10)
+ * Liste vide (Spécifique)
+ * Liste avec un item dans la liste. Il a une quantité négative. (Spécifique)
+ * UPC avec moins de 11 chiffres (intervalle de 1 chiffre inclus à 10 inclus)
+ * UPC avec plus de 11 chiffres (intervalle > 11)
+ * UPC avec une lettre à la place du 11ème chiffre (Spécifique)
+ * UPC vide (Spécifique)
+ * Prix plus grand que 35 pour un item (intervalle > 35)
+ * Prix négatif (Spécifique)
+ * Prix nul (Spécifique)
+ * 2 items avec même UPC sans annulation du second item (Unique)
+ * 
+ * Classes d'équivalence valides :
+ * 
+ * Nombre items avec le même UPC et quantités négatives symétriques retirés (Spécifique)
+ * Rabais de 1$ avec 5 à 10 items inclus avec UPC différents et avec total avant taxes d'au moins 2$ (Groupe)
+ * UPC avec 11 chiffres (Spécifique)
+ */
+
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.ArrayList;
@@ -33,6 +55,10 @@ public class RegisterTest {
         register.changePaper(PaperRoll.LARGE_ROLL);
     }
 
+	/**
+	 * 
+	 * Résultat attendu : Impression facture sans exceptions
+	 */
 	@Test
 	@DisplayName("Classes d'équivalences valides")
 	public void valide() {
@@ -68,6 +94,10 @@ public class RegisterTest {
 		assertThrows(InvalidQuantityException.class, () -> System.out.println(register.print(grocery)));
 	}
 	
+	/**
+	 * 
+	 * Résultat attendu : Pas d'impression, EmptyGroceryListException 
+	 */
 	@Test
 	@DisplayName("Liste vide")
 	public void listeVide() {
@@ -75,6 +105,10 @@ public class RegisterTest {
 		assertThrows(RegisterException.EmptyGroceryListException.class, () -> System.out.println(register.print(grocery)));
 	}
 	
+	/**
+	 * 
+	 * Résultat attendu : Pas d'impression, TooManyItemsException
+	 */
 	@Test
 	@DisplayName("Liste avec plus de 10 items")
 	public void listePlusDe10Items() {
@@ -93,6 +127,10 @@ public class RegisterTest {
 		assertThrows(RegisterException.TooManyItemsException.class, () -> System.out.println(register.print(grocery)));
 	}
 	
+	/**
+	 * 
+	 * Résultat attendu : Pas d'impression, NegativeAmountException
+	 */
 	@Test
 	@DisplayName("Prix négatif")
 	public void prixNegatif() {
@@ -101,6 +139,22 @@ public class RegisterTest {
 		assertThrows(AmountException.NegativeAmountException.class, () -> System.out.println(register.print(grocery)));
 	}
 	
+	/**
+	 * 
+	 * Résultat attendu : Pas d'impression, AmountException
+	 */
+	@Test
+	@DisplayName("Prix nul")
+	public void prixNul() {
+		List<Item> grocery = new ArrayList<Item>();
+		grocery.add(new Item(Upc.generateCode("11519314158"), "Apricots", 1, 0));
+		assertThrows(AmountException.class, () -> System.out.println(register.print(grocery)));
+	}
+	
+	/**
+	 * 
+	 * Résultat attendu : Pas d'impression, AmountTooLargeException
+	 */
 	@Test
 	@DisplayName("Prix entre 35 exclus et 100 exclus")
 	public void prixPlusGrand35PlusPetit100() {
@@ -117,6 +171,10 @@ public class RegisterTest {
 		assertThrows(AmountException.AmountTooLargeException.class, () -> System.out.println(register.print(grocery)));
 	}
 	
+	/**
+	 * 
+	 * Résultat attendu : Pas d'impression, NoUpcException
+	 */
 	@Test
 	@DisplayName("UPC vide")
 	public void UPCVide() {
@@ -125,6 +183,10 @@ public class RegisterTest {
 		assertThrows(InvalidUpcException.NoUpcException.class, () -> System.out.println(register.print(grocery)));
 	}
 	
+	/**
+	 * 
+	 * Résultat attendu : Pas d'impression, UpcTooShortException
+	 */
 	@Test
 	@DisplayName("UPC de longueur plus petite que 11")
 	public void UPCPlusPetitQue11() {
@@ -133,6 +195,10 @@ public class RegisterTest {
 		assertThrows(InvalidUpcException.UpcTooShortException.class, () -> System.out.println(register.print(grocery)));
 	}
 	
+	/**
+	 * 
+	 * Résultat attendu : Pas d'impression, UpcTooLongException
+	 */
 	@Test
 	@DisplayName("UPC de longueur plus grande que 11")
 	public void UPCPlusGrandQue11() {
@@ -141,6 +207,10 @@ public class RegisterTest {
 		assertThrows(InvalidUpcException.UpcTooLongException.class, () -> System.out.println(register.print(grocery)));
 	}
 	
+	/**
+	 * 
+	 * Résultat attendu : Pas d'impression, InvalidDigitException
+	 */
 	@Test
 	@DisplayName("UPC avec une lettre à la place du dernier digit")
 	public void UPCAvecLettre() {
@@ -149,6 +219,10 @@ public class RegisterTest {
 		assertThrows(InvalidUpcException.InvalidDigitException.class, () -> System.out.println(register.print(grocery)));
 	}
 	
+	/**
+	 * 
+	 * Résultat attendu : Impression que d'un item, DuplicateItemException
+	 */
 	@Test
 	@DisplayName("2 items avec le même UPC sans quantité négative sur le deuxième item")
 	public void DeuxItemsMemeUPCQuantitésPositives() {
@@ -158,6 +232,10 @@ public class RegisterTest {
 		assertThrows(Register.DuplicateItemException.class, () -> System.out.println(register.print(grocery)));
 	}
 	
+	/**
+	 * 
+	 * Résultat attendu : Pas d'impression, InvalidQuantityException
+	 */
 	@Test
 	@DisplayName("Un item avec une quantité fractionnaire et dont l'UPC ne débute pas par 2")
 	public void QuantitéFractionnaireUPCDebutantPasPar2() {
@@ -166,6 +244,10 @@ public class RegisterTest {
 		assertThrows(InvalidQuantityException.class, () -> System.out.println(register.print(grocery)));
 	}
 	
+	/**
+	 * 
+	 * Résultat attendu : Pas d'impression, NoSuchItemException
+	 */
 	@Test
 	@DisplayName("Il n'y a qu'un item dans la liste. Il a une quantité négative")
 	public void QuantitéNégativeListeAvecUnSeulItem() {
