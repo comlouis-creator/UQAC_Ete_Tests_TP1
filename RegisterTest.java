@@ -13,7 +13,7 @@
  * Liste avec un item dans la liste. Il a une quantité négative. (Spécifique)
  * UPC avec moins de 11 chiffres (intervalle de 1 chiffre inclus à 10 inclus)
  * UPC avec plus de 11 chiffres (intervalle > 11)
- * UPC avec une lettre à la place du 11ème chiffre (Spécifique)
+ * UPC avec une lettre (Spécifique)
  * UPC vide (Spécifique)
  * Prix plus grand que 35 pour un item (intervalle > 35)
  * Prix négatif (Spécifique)
@@ -25,6 +25,7 @@
  * Nombre items avec le même UPC et quantités négatives symétriques retirés (Spécifique)
  * Rabais de 1$ avec 5 à 10 items inclus avec UPC différents et avec total avant taxes d'au moins 2$ (Groupe)
  * UPC avec 11 chiffres (Spécifique)
+ * Nombre items entre 1 et 10 inclus dans la liste
  */
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -95,7 +96,7 @@ public class RegisterTest {
 	}
 	
 	/**
-	 * 
+	 * Liste avec 0 item
 	 * Résultat attendu : Pas d'impression, EmptyGroceryListException 
 	 */
 	@Test
@@ -106,7 +107,7 @@ public class RegisterTest {
 	}
 	
 	/**
-	 * 
+	 * Liste avec plus de 10 items + UPC valides 11 chiffres 
 	 * Résultat attendu : Pas d'impression, TooManyItemsException
 	 */
 	@Test
@@ -128,7 +129,7 @@ public class RegisterTest {
 	}
 	
 	/**
-	 * 
+	 * Prix négatif + Nombre item compris entre 1 et 10 inclus + CUP 11 chiffres
 	 * Résultat attendu : Pas d'impression, NegativeAmountException
 	 */
 	@Test
@@ -140,7 +141,7 @@ public class RegisterTest {
 	}
 	
 	/**
-	 * 
+	 * Prix nul + Nombre item compris entre 1 et 10 inclus
 	 * Résultat attendu : Pas d'impression, AmountException
 	 */
 	@Test
@@ -152,7 +153,7 @@ public class RegisterTest {
 	}
 	
 	/**
-	 * 
+	 * Prix d'un item supérieur à 35 + Nombre item compris entre 1 et 10 inclus
 	 * Résultat attendu : Pas d'impression, AmountTooLargeException
 	 */
 	@Test
@@ -172,7 +173,7 @@ public class RegisterTest {
 	}
 	
 	/**
-	 * 
+	 * UPC avec String vide + Nombre item compris entre 1 et 10 inclus
 	 * Résultat attendu : Pas d'impression, NoUpcException
 	 */
 	@Test
@@ -184,7 +185,7 @@ public class RegisterTest {
 	}
 	
 	/**
-	 * 
+	 * UPC avec moins de 11 chiffres + Nombre item compris entre 1 et 10 inclus
 	 * Résultat attendu : Pas d'impression, UpcTooShortException
 	 */
 	@Test
@@ -196,7 +197,7 @@ public class RegisterTest {
 	}
 	
 	/**
-	 * 
+	 * UPC avec plus de 11 chiffres + Nombre item compris entre 1 et 10 inclus
 	 * Résultat attendu : Pas d'impression, UpcTooLongException
 	 */
 	@Test
@@ -208,11 +209,11 @@ public class RegisterTest {
 	}
 	
 	/**
-	 * 
+	 * UPC avec une lettre + Nombre item compris entre 1 et 10 inclus
 	 * Résultat attendu : Pas d'impression, InvalidDigitException
 	 */
 	@Test
-	@DisplayName("UPC avec une lettre à la place du dernier digit")
+	@DisplayName("UPC avec une lettre")
 	public void UPCAvecLettre() {
 		List<Item> grocery = new ArrayList<Item>();
 		grocery.add(new Item(Upc.generateCode("0151931415A"), "Pineapples", 1, 1));
@@ -220,7 +221,7 @@ public class RegisterTest {
 	}
 	
 	/**
-	 * 
+	 * Doublon d'items + Nombre item dans la liste compris entre 1 et 10 inclus
 	 * Résultat attendu : Impression que d'un item, DuplicateItemException
 	 */
 	@Test
@@ -233,7 +234,7 @@ public class RegisterTest {
 	}
 	
 	/**
-	 * 
+	 * Item avec quantité fractionnaire dont UPC ne débute pas par 2 + Nombre item compris entre 1 et 10 inclus
 	 * Résultat attendu : Pas d'impression, InvalidQuantityException
 	 */
 	@Test
@@ -245,7 +246,7 @@ public class RegisterTest {
 	}
 	
 	/**
-	 * 
+	 * Item avec quantité négative sans annulation + Nombre item compris entre 1 et 10 inclus
 	 * Résultat attendu : Pas d'impression, NoSuchItemException
 	 */
 	@Test
