@@ -11,9 +11,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import stev.kwikemart.AmountException;
+import stev.kwikemart.CouponException;
 import stev.kwikemart.InvalidQuantityException;
 import stev.kwikemart.InvalidUpcException;
 import stev.kwikemart.Item;
@@ -21,7 +23,6 @@ import stev.kwikemart.PaperRoll;
 import stev.kwikemart.Register;
 import stev.kwikemart.RegisterException;
 import stev.kwikemart.Upc;
-import stev.register.*;
 
 public class RegisterTest {
 
@@ -33,6 +34,7 @@ public class RegisterTest {
     }
 
 	@Test
+	@DisplayName("Classes d'équivalences valides")
 	public void valide() {
 		
 		List<Item> grocery = new ArrayList<Item>();
@@ -59,6 +61,7 @@ public class RegisterTest {
 	}
 	
 	@Test
+	@DisplayName("Quantité nulle")
 	public void quantiteNulle() {
 		List<Item> grocery = new ArrayList<Item>();
 		grocery.add(new Item(Upc.generateCode("34323432343"), "Nerds", 0, 1));
@@ -66,12 +69,14 @@ public class RegisterTest {
 	}
 	
 	@Test
+	@DisplayName("Liste vide")
 	public void listeVide() {
 		List<Item> grocery = new ArrayList<Item>();
 		assertThrows(RegisterException.EmptyGroceryListException.class, () -> System.out.println(register.print(grocery)));
 	}
 	
 	@Test
+	@DisplayName("Liste avec plus de 10 items")
 	public void listePlusDe10Items() {
 		List<Item> grocery = new ArrayList<Item>();
 		grocery.add(new Item(Upc.generateCode("64748119599"), "Chewing gum", 2, 0.99));
@@ -89,6 +94,7 @@ public class RegisterTest {
 	}
 	
 	@Test
+	@DisplayName("Prix négatif")
 	public void prixNegatif() {
 		List<Item> grocery = new ArrayList<Item>();
 		grocery.add(new Item(Upc.generateCode("01519314158"), "Pineapples", 1, -1));
@@ -96,6 +102,7 @@ public class RegisterTest {
 	}
 	
 	@Test
+	@DisplayName("Prix entre 35 exclus et 100 exclus")
 	public void prixPlusGrand35PlusPetit100() {
 		List<Item> grocery = new ArrayList<Item>();
 		grocery.add(new Item(Upc.generateCode("01519314158"), "Pineapples", 1, 36));
@@ -103,6 +110,7 @@ public class RegisterTest {
 	}
 	
 	@Test
+	@DisplayName("Prix avec 3 chiffres et plus")
 	public void prix3ChiffresEtPlus() {
 		List<Item> grocery = new ArrayList<Item>();
 		grocery.add(new Item(Upc.generateCode("01519314158"), "Pineapples", 1, 100));
@@ -110,6 +118,7 @@ public class RegisterTest {
 	}
 	
 	@Test
+	@DisplayName("UPC vide")
 	public void UPCVide() {
 		List<Item> grocery = new ArrayList<Item>();
 		grocery.add(new Item(Upc.generateCode(""), "Pineapples", 1, 1));
@@ -117,17 +126,61 @@ public class RegisterTest {
 	}
 	
 	@Test
+	@DisplayName("UPC de longueur plus petite que 11")
 	public void UPCPlusPetitQue11() {
 		List<Item> grocery = new ArrayList<Item>();
-		grocery.add(new Item(Upc.generateCode("01519314156"), "Pineapples", 1, 1));
+		grocery.add(new Item(Upc.generateCode("0151931415"), "Pineapples", 1, 1));
 		assertThrows(InvalidUpcException.UpcTooShortException.class, () -> System.out.println(register.print(grocery)));
 	}
 	
 	@Test
+	@DisplayName("UPC de longueur plus grande que 11")
 	public void UPCPlusGrandQue11() {
 		List<Item> grocery = new ArrayList<Item>();
 		grocery.add(new Item(Upc.generateCode("015193141567"), "Pineapples", 1, 1));
 		assertThrows(InvalidUpcException.UpcTooLongException.class, () -> System.out.println(register.print(grocery)));
+	}
+	
+	@Test
+	@DisplayName("UPC avec une lettre à la place du dernier digit")
+	public void UPCAvecLettre() {
+		List<Item> grocery = new ArrayList<Item>();
+		grocery.add(new Item(Upc.generateCode("0151931415A"), "Pineapples", 1, 1));
+		assertThrows(InvalidUpcException.InvalidDigitException.class, () -> System.out.println(register.print(grocery)));
+	}
+	
+	@Test
+	@DisplayName("2 items avec le même UPC sans quantité négative sur le deuxième item")
+	public void DeuxItemsMemeUPCQuantitésPositives() {
+		List<Item> grocery = new ArrayList<Item>();
+		grocery.add(new Item(Upc.generateCode("01519314158"), "Pineapples", 1, 1));
+		grocery.add(new Item(Upc.generateCode("01519314158"), "Pineapples", 1, 1));
+		assertThrows(Register.DuplicateItemException.class, () -> System.out.println(register.print(grocery)));
+	}
+	
+	@Test
+	@DisplayName("Un item avec une quantité fractionnaire et dont l'UPC ne débute pas par 2")
+	public void QuantitéFractionnaireUPCDebutantPasPar2() {
+		List<Item> grocery = new ArrayList<Item>();
+		grocery.add(new Item(Upc.generateCode("12804918500"), "Beef", 0.5, 5.75));
+		assertThrows(InvalidQuantityException.class, () -> System.out.println(register.print(grocery)));
+	}
+	
+	@Test
+	@DisplayName("Il n'y a qu'un item dans la liste. Il a une quantité négative")
+	public void QuantitéNégativeListeAvecUnSeulItem() {
+		List<Item> grocery = new ArrayList<Item>();
+		grocery.add(new Item(Upc.generateCode("12345678901"), "Bananas", -1, 1));
+		assertThrows(Register.NoSuchItemException.class, () -> System.out.println(register.print(grocery)));
+	}
+	
+	@Test
+	@DisplayName("Un coupon est plus élevé que le total des achats")
+	public void Coupon() {
+		List<Item> grocery = new ArrayList<Item>();
+		grocery.add(new Item(Upc.generateCode("64748119599"), "Chewing gum", 1, 0.495));
+		grocery.add(new Item(Upc.generateCode("54323432343"), "Chewing gum Club", 1, 0.53));
+		assertThrows(CouponException.InvalidCouponQuantityException.class, () -> System.out.println(register.print(grocery)));
 	}
 
 }
