@@ -24,10 +24,12 @@
  * 
  * Nombre items avec le même UPC et quantités négatives symétriques retirés (Spécifique)
  * Rabais de 1$ avec 5 à 10 items inclus avec UPC différents et avec total avant taxes d'au moins 2$ (Groupe)
- * UPC avec 11 chiffres (Spécifique)
- * Nombre items entre 1 et 10 inclus dans la liste
+ * UPC valide avec 11 chiffres (Spécifique)
+ * Nombre items entre 1 et 10 inclus dans la liste (intervalle)
+ * Prix non nuls (intervalles)
  */
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.ArrayList;
@@ -84,15 +86,7 @@ public class RegisterTest {
 		grocery.add(new Item(Upc.generateCode("54323432343"), "Doritos Club", 1, 1));
 		grocery.add(new Item(Upc.generateCode("61519314159"), "Doritos", 1, 1));
 
-		System.out.println(register.print(grocery));
-	}
-	
-	@Test
-	@DisplayName("Quantité nulle")
-	public void quantiteNulle() {
-		List<Item> grocery = new ArrayList<Item>();
-		grocery.add(new Item(Upc.generateCode("34323432343"), "Nerds", 0, 1));
-		assertThrows(InvalidQuantityException.class, () -> System.out.println(register.print(grocery)));
+		assertDoesNotThrow(() -> System.out.println(register.print(grocery)));
 	}
 	
 	/**
@@ -107,7 +101,7 @@ public class RegisterTest {
 	}
 	
 	/**
-	 * Liste avec plus de 10 items + UPC valides 11 chiffres 
+	 * Liste avec plus de 10 items + UPC valides 11 chiffres + prix non nuls
 	 * Résultat attendu : Pas d'impression, TooManyItemsException
 	 */
 	@Test
@@ -161,14 +155,6 @@ public class RegisterTest {
 	public void prixPlusGrand35PlusPetit100() {
 		List<Item> grocery = new ArrayList<Item>();
 		grocery.add(new Item(Upc.generateCode("01519314158"), "Pineapples", 1, 36));
-		assertThrows(AmountException.AmountTooLargeException.class, () -> System.out.println(register.print(grocery)));
-	}
-	
-	@Test
-	@DisplayName("Prix avec 3 chiffres et plus")
-	public void prix3ChiffresEtPlus() {
-		List<Item> grocery = new ArrayList<Item>();
-		grocery.add(new Item(Upc.generateCode("01519314158"), "Pineapples", 1, 100));
 		assertThrows(AmountException.AmountTooLargeException.class, () -> System.out.println(register.print(grocery)));
 	}
 	
@@ -264,6 +250,22 @@ public class RegisterTest {
 		grocery.add(new Item(Upc.generateCode("64748119599"), "Chewing gum", 1, 0.495));
 		grocery.add(new Item(Upc.generateCode("54323432343"), "Chewing gum Club", 1, 0.53));
 		assertThrows(CouponException.InvalidCouponQuantityException.class, () -> System.out.println(register.print(grocery)));
+	}
+	
+	@Test
+	@DisplayName("Prix avec 3 chiffres et plus")
+	public void prix3ChiffresEtPlus() {
+		List<Item> grocery = new ArrayList<Item>();
+		grocery.add(new Item(Upc.generateCode("01519314158"), "Pineapples", 1, 100));
+		assertThrows(AmountException.AmountTooLargeException.class, () -> System.out.println(register.print(grocery)));
+	}
+	
+	@Test
+	@DisplayName("Quantité nulle")
+	public void quantiteNulle() {
+		List<Item> grocery = new ArrayList<Item>();
+		grocery.add(new Item(Upc.generateCode("34323432343"), "Nerds", 0, 1));
+		assertThrows(InvalidQuantityException.class, () -> System.out.println(register.print(grocery)));
 	}
 
 }
