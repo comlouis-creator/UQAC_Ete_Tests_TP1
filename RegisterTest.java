@@ -57,7 +57,7 @@ public class RegisterTest {
     }
 
 	/**
-	 * 
+	 * Nombre items entre 1 et 10 inclus dans la liste + CUP dupliqué avec annulation + Quantité fractionnaire avec UPC débutant par 2
 	 * Résultat attendu : Impression facture sans exceptions
 	 */
 	@Test
