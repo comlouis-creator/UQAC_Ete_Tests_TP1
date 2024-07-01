@@ -1,0 +1,1 @@
+G((open(X) -> !eventually(open(Y))) && (open(Y) -> !eventually(open(X))))

@@ -1,0 +1,1 @@
+G((open(X) -> (X !isApproved Y) U close(X)) && (open(X) -> (X !withdraw Y) U close(X)))
